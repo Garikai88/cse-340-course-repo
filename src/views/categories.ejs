@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
+    <%- include('partials/header') %>
+
     <nav>
         <ul>
             <li><a href="/">Home</a></li>
@@ -15,6 +17,18 @@
             <li><a href="/categories">Categories</a></li>
         </ul>
     </nav>
+
+    <main>
+        <h1><%= title %></h1>
+        <ul>
+            <li>Environmental</li>
+            <li>Educational</li>
+            <li>Community Service</li>
+            <li>Health and Wellness</li>
+        </ul>
+    </main>
+
+    <%- include('partials/footer') %>
     
 </body>
 </html>

@@ -42,6 +42,11 @@ app.get('/organizations', async (req, res) => {
     res.render('organizations', { title });
 });
 
+app.get('/categories', async (req, res) => {
+    const title = 'Our categories of the work we do';
+    res.render('categories', { title } );
+});
+
 // Start the server
 app.get('/projects', async (req, res) => {
     const title = 'Service Projects';
