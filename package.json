@@ -1,0 +1,29 @@
+{
+  "name": "cse-340-course-repo",
+  "version": "1.0.0",
+  "description": "This is the course repository for cse 340 Backend development under BYU pathway, Idaho.",
+  "homepage": "https://github.com/Garikai88/cse-340-course-repo#readme",
+  "bugs": {
+    "url": "https://github.com/Garikai88/cse-340-course-repo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Garikai88/cse-340-course-repo.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "ejs": "^5.0.2",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
