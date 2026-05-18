@@ -7,14 +7,33 @@
     <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
-     <%- include('partials/header') %> 
+    <%- include('partials/header') %>
     <main>
         <h1><%= title %></h1>
         <h2>Upcoming Service Projects</h2>
         <ul>
-            <li>Park Cleanup - Join us to clean up local parks and make them beautiful!</li>
-            <li>Food Drive - Help collect and distribute food to those in need.</li>
-            <li>Community Tutoring - Volunteer to tutor students in various subjects.</li>
+            <% if (projects && projects.length > 0) { %>
+                <% projects.forEach(project => { %>
+                    <li>
+                        <strong>
+                            <% 
+                                // Format the date to be user-friendly (e.g., "June 5, 2026")
+                                const formattedDate = new Date(project.project_date).toLocaleDateString('en-US', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                    timezone: 'UTC' // Prevents time zone shifts from changing the date 
+                                });
+                            %>
+                            <%= formattedDate %>:
+                        </strong>
+                        <%= project.project_title %></em>
+                        <em>(<%= project.organization_name %>)</em>
+                    </li>
+                <%}); %>
+            <li%} else { %>
+                <li>No upcoming service projects found at this time.</li>
+            <% } %>
         </ul>
     </main>
     <%- include('partials/footer') %>

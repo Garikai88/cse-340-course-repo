@@ -4,6 +4,8 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import {testConnection} from './src/models/db.js';
 import {getAllOrganizations} from './src/models/organizations.js';
+import {getAllProjectsWithOrganizations} from './src/models/projects.js';
+import { getAllCategories } from './src/models/categories.js';
 
 
 
@@ -48,14 +50,38 @@ app.get('/organizations', async (req, res) => {
 });
 
 app.get('/categories', async (req, res) => {
-    const title = 'Our categories of the work we do';
-    res.render('categories', { title } );
+    try {
+        //1. Fetch the array of category names for the model database helper
+        const categories = await getAllCategories();
+
+        const title = 'Our categories of the work we do';
+
+        // 2. We Render the EJS file passing the database array to the view 
+        res.render('categories', { title, categories });
+    } catch (error) {
+        console.error('Error loading categories page:', error);
+        res.status(500).send('Internal Server Error');
+    }
+        
 });
 
 // Start the server
 app.get('/projects', async (req, res) => {
-    const title = 'Service Projects';
-    res.render('projects', { title });
+    try {
+        // We fetch the relational project list from the database model
+        const projects = await getAllProjectsWithOrganizations();
+
+        const title = 'Service Projects';
+
+        // We then pass both the page title and the projects array data into the view template
+        res.render('projects', { title, projects });
+
+
+    } catch (error) {
+        console.error('Error loading projects page:', error);
+        res.status(500).send('Internal Server Error');
+    }    
+   
 });
 
 
@@ -64,6 +90,14 @@ app.listen (PORT, async () => {
         await testConnection();
         console.log(`Server is running at http://127.0.0.1:${PORT}`);
         console.log(`Environment: ${NODE_ENV}`);
+
+        // This block will print and verify the projects data:
+        console.log('\n-- step6.2: Verifying Service Projects Data ---');
+        const sampleProjects = await getAllProjectsWithOrganizations();
+        console.table(sampleProjects);
+        console.log('---------\n');
+
+
     } catch (error) {
         console.error('Error connection to the database:', error);
     }
