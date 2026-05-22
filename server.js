@@ -1,11 +1,13 @@
 import express from 'express';
-
 import { fileURLToPath } from 'url';
 import path from 'path';
+
+// We will keep our database tool imports
 import {testConnection} from './src/models/db.js';
-import {getAllOrganizations} from './src/models/organizations.js';
 import {getAllProjectsWithOrganizations} from './src/models/projects.js';
-import { getAllCategories } from './src/models/categories.js';
+
+// We then import our brand new router file
+import appRoutes from './src/routes.js';
 
 
 
@@ -33,56 +35,57 @@ app.set('view engine', 'ejs');
 // Tell Express where to find your templates
 app.set('views', path.join(__dirname, 'src/views'));
 
+// Mddleware to log all incoming requests
+app.use((req, res, next) => {
+    if (NODE_ENV === 'development') {
+        console.log(`${req.method} ${req.url}`);
+    }
+    next(); // This will pass control to the next middleware or route
+});
+
+// Middleware to make NOBE_ENV available to all templates
+app.use((req, res, next) => {
+    res.locals.NODE_ENV = NODE_ENV;
+    next();
+});
+
 /**
  * Routes
  */
-app.get('/', async (req, res) => {
-    const title = 'Home';
-    res.render('home', { title });
+
+// We will mount all the controller routes cleanly using our new router
+app.use(appRoutes);
+
+
+// Cath-all route for 404 errors
+app.use((req, res, next) => {
+    const err = new Error('Page Not Found');
+    err.status = 404;
+    next(err);
 });
 
-app.get('/organizations', async (req, res) => {
-    const organizations = await getAllOrganizations();
-    
+//Global error handler
+app.use((err, req, res, next) => {
+    // Log error details for debugging
+    console.error('Error occured:', err.message);
+    console.error('Satck trace:', err.stack);
 
-    const title = 'Our Partner Organizations';
-    res.render('organizations', { title, organizations });
+    // Determine status and template
+    const status = err.status || 500;
+    const template = status === 404 ? '404' : '500';
+
+    // Prepare data for the template
+    const context = {
+        title: status === 404 ? 'Page Not Found' : 'Server Error',
+        error: err.message,
+        stack: err.stack
+    };
+
+    // Render the appropriate error template
+    res.status(status).render(`errors/${template}`, context);
 });
 
-app.get('/categories', async (req, res) => {
-    try {
-        //1. Fetch the array of category names for the model database helper
-        const categories = await getAllCategories();
 
-        const title = 'Our categories of the work we do';
-
-        // 2. We Render the EJS file passing the database array to the view 
-        res.render('categories', { title, categories });
-    } catch (error) {
-        console.error('Error loading categories page:', error);
-        res.status(500).send('Internal Server Error');
-    }
-        
-});
-
-// Start the server
-app.get('/projects', async (req, res) => {
-    try {
-        // We fetch the relational project list from the database model
-        const projects = await getAllProjectsWithOrganizations();
-
-        const title = 'Service Projects';
-
-        // We then pass both the page title and the projects array data into the view template
-        res.render('projects', { title, projects });
-
-
-    } catch (error) {
-        console.error('Error loading projects page:', error);
-        res.status(500).send('Internal Server Error');
-    }    
-   
-});
 
 
 app.listen (PORT, async () => {

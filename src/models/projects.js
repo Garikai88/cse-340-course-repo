@@ -7,7 +7,7 @@ import db from './db.js';
  * @returns {Promise<Array>} This array resolves to an array of project objects. 
  */
 
- export async function getAllProjectsWithOrganizations() {
+async function getAllProjectsWithOrganizations() {
     const queryText = `
         SELECT 
             p.project_id,
@@ -29,3 +29,26 @@ import db from './db.js';
         throw error;
     }
 }
+
+const getProjectsByOrganizationId = async (organizationId) => {
+    const query = `
+        SELECT 
+            projects_id,
+            organization_id,
+            title,
+            description,
+            location,
+            date
+        FROM project
+        WHERE organization_id = $1
+        ORDER BY date;
+    `;
+
+    const queryParams = [organizationId];
+    const result = await db.query(query, queryParams);
+
+    return result.rows;
+};
+
+// Export the model functions
+export {getAllProjectsWithOrganizations, getProjectsByOrganizationId};
