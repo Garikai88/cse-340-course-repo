@@ -2,9 +2,9 @@
 import{getAllProjectsWithOrganizations} from '../models/projects.js';
 
 // 2. Define any controller functions with descriptive name
-const showProjectsPage = async (req, res) => {
+const showProjectsPage = async (req, res,next) => {
     try {
-        const projects = await getAllProjects();
+        const projects = await getAllProjectsWithOrganizations();
         const title = 'Service Projects';
 
         res.render('projects', {title, projects});

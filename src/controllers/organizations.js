@@ -15,13 +15,21 @@ const showOrganizationsPage = async (req, res, next) => {
     }
 };
 
-const showOrganizationDetailsPage = async (req, res) => {
-    const organizationId = req.params.id;
+const showOrganizationDetailsPage = async (req, res, next) => {
+    try {
+        const organizationId = req.params.id;
     const organizationDetails = await getOrganizationDetails(organizationId);
     const projects = await getProjectsByOrganizationId(organizationId);
     const title = 'organization Details';
 
     res.render('organization', {title, organizationDetails, projects});
+
+    } catch (error) {
+        // This prints the raw database error directly to the console window
+        console.error("Error in showOrganizationDetailsPage:", error);
+        next(error);
+    }
+    
 };
 
 //3. Export any contoller functions at the bottom
