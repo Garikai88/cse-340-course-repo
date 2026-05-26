@@ -1,0 +1,33 @@
+<main%- include('../partials/header') %>
+
+<main class="container">
+    <section class="category-header">
+        <h1><%= category.name %> Projects</h1>
+        <p class="breadcrumbs"><a href="/categories">All Categories</a> &gt; <%= catgory.name %></p>
+    </section>
+
+    <section class="projects-grid">
+        <p% if (projects && projects.length > 0) { %>
+            <div class="card-wrapper">
+                <a% projects.forEach(project => { %>
+                    <article class="project-card">
+                        <h2>
+                            <a href="/projects/<%= project.project_d %>">
+                                <%= project.title %>
+                            </a>
+                        </h2>
+                        <p class="location"><strong>Location:</strong> <%= project.location %></p>
+                        <p class="description"><%= project.description %></p>
+                    </article> 
+                <% }) %>   
+            </div>
+        <% } else { %>
+            <div class="empty-state">
+                <p>No active service projects are currently filed under this category.</p>
+                <a href="/categories" class="btn">Return to Categories</a>
+            </div>
+        <% } %>
+    </section>
+</main>
+
+<%- include('../partials/footer') %>

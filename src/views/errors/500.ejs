@@ -1,0 +1,16 @@
+<%- include('../partials/header') %>
+<main>
+    <h1>Something Went Wrong</h1>
+    <p>We are experiencing technical difficulties. Our team has been notified and is working to fix the issue.</p>
+
+    <% if (locals.error) { %>
+        <details open>
+            <summary>Error Details (Development Only)</summary>
+            <pre><%= error.message || error %></pre>
+            <% if (error.stack) { %>
+                <pre style="white-space: pre-wrap; font-size: 0.85rem;"><%= error.stack %></pre>
+            <% } %>
+        </details>
+    <% } %>
+</main>
+<%- include('../partials/footer') %>

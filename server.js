@@ -9,6 +9,9 @@ import {getAllProjectsWithOrganizations} from './src/models/projects.js';
 // We then import our brand new router file
 import appRoutes from './src/routes.js';
 
+// New: Here we import the central global error handler function from our controller
+import { handleGlobalErrors } from './src/controllers/errors.js'; 
+
 
 
 // Define the application environment
@@ -64,45 +67,28 @@ app.use((req, res, next) => {
     next(err);
 });
 
-//Global error handler
-app.use((err, req, res, next) => {
-    // Log error details for debugging
-    console.error('Error occured:', err.message);
-    console.error('Satck trace:', err.stack);
+// We delegate global error handling directly to our controller function
+// This is respect clean MVC boundaries and utilizes our custom folder path strings
+app.use(handleGlobalErrors);
 
-    // Determine status and template
-    const status = err.status || 500;
-    const template = status === 404 ? '404' : '500';
-
-    // Prepare data for the template
-    const context = {
-        title: status === 404 ? 'Page Not Found' : 'Server Error',
-        error: err.message,
-        stack: err.stack
-    };
-
-    // Render the appropriate error template
-    res.status(status).render(`errors/${template}`, context);
-});
-
-
-
-
-app.listen (PORT, async () => {
+/**
+ * Server Startup &DB Boot Verification Matrix
+ */
+app.listen(PORT, async () => {
     try {
         await testConnection();
         console.log(`Server is running at http://127.0.0.1:${PORT}`);
         console.log(`Environment: ${NODE_ENV}`);
 
-        // This block will print and verify the projects data:
+        // We verify the block to print active workspace rows
         console.log('\n-- step6.2: Verifying Service Projects Data ---');
         const sampleProjects = await getAllProjectsWithOrganizations();
         console.table(sampleProjects);
-        console.log('---------\n');
+        console.log('--------\n');
 
 
     } catch (error) {
-        console.error('Error connection to the database:', error);
+        console.error('Error connecting to the database:', error);
+
     }
-    
 });

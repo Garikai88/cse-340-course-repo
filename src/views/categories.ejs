@@ -15,13 +15,14 @@
             <% if (categories && categories.length > 0) { %> 
                 <% categories.forEach(category => { %>
                     <li>
-                        <%= category.name %>
+                        <a href="/category/<%= category.category_id %>">
+                            <%= category.name %>
+                        </a>                        
                     </li>
                 <% }); %>
             <% } else { %>
                 <li>No project categories found at this time.</li>
             <% } %>
-
         </ul>
     </main>
 
