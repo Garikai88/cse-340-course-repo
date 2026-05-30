@@ -48,7 +48,7 @@ const getProjectsByOrganizationId = async (organizationId) => {
 const createProject = async (title, description, location, date, organizationId) => {
     const query = `
         INSERT INTO service_project (title, description, location, project_date, organization_id)
-        VALUES ($1, $2, $£, $4, $5)
+        VALUES ($1, $2, $3, $4, $5)
         RETURNING project_id;
         `;
 
@@ -62,12 +62,30 @@ const createProject = async (title, description, location, date, organizationId)
         return result.rows[0].project_id;
 };
 
-//  BINGO: Export all three functions together so no controllers break!
+// 5. Retrieve a single project by its ID for details view and forms
+const getProjectDetails = async (projectId) => {
+    const query = `
+        SELECT 
+            project_id,
+            organization_id,
+            title,
+            description,
+            location,
+            project_date
+        FROM service_project
+        WHERE project_id = $1;
+    `;
+    const result = await db.query(query, [projectId]);
+    return result.rows[0]; // Return the single project object found
+};
+
+// Export all functions together so no controllers break!
 export { 
     getAllProjects, 
     getAllProjectsWithOrganizations, 
     getProjectsByOrganizationId, 
-    createProject 
+    createProject,
+    getProjectDetails // <-- Add this here!
 };
 
 
