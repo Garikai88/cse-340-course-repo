@@ -1,6 +1,8 @@
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import session from 'express-session';
+import flash from './src/middleware/flash.js';
 
 // We will keep our database tool imports
 import {testConnection} from './src/models/db.js';
@@ -29,6 +31,36 @@ const app = express();
  * Configure Express middleware
  */
 
+// Middleware to parse incoming POST request bodies
+// It allows Express to decode standard HTML from submissions
+app.use(express.urlencoded({ extended: true }));
+
+// Use flash message middleware
+app.use(flash);
+
+// Allows Express to understand JSON-formattted paylods
+app.use(express.json());
+
+// Load the session secret string from the environment variables
+const SESSION_SECRET = process.env.SESSION_SECRET;
+
+// We configure session management pipeline before loading any routes
+app.use(session({ 
+    secret: SESSION_SECRET,
+    resave: false,                // Prevents saving sessions that haven't changed 
+    saveUninitialized: false,     // Prevents saving blank/empty sessions
+    cookie: {
+        secure: false,            // Set to false for HTTP localhost development
+        maxAge: 1000 * 60 * 60    // Keeps the user session active for an hour
+    }
+}));
+
+// Flash Middleware Mouted here
+app.use(flash);
+
+// The static asset configuration
+app.use(express.static('public'));
+
 // Serve static files from the public directory
 app.use(express.static(path.join(__dirname,'public')));
 
@@ -46,7 +78,7 @@ app.use((req, res, next) => {
     next(); // This will pass control to the next middleware or route
 });
 
-// Middleware to make NOBE_ENV available to all templates
+// Middleware to make NODE_ENV available to all templates
 app.use((req, res, next) => {
     res.locals.NODE_ENV = NODE_ENV;
     next();
@@ -68,7 +100,7 @@ app.use((req, res, next) => {
 });
 
 // We delegate global error handling directly to our controller function
-// This is respect clean MVC boundaries and utilizes our custom folder path strings
+// This is to respect clean MVC boundaries and utilizes our custom folder path strings
 app.use(handleGlobalErrors);
 
 /**

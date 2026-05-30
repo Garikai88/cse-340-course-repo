@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+</head>
+<body>
+    <main class="form-container">
+        <h1>Add a New Service Project</h1>
+
+        <div% if (messages && messages.error) { %>
+            <div class="flash-message error-messages">
+                <% messages.error.forEach(function(msg) {%>
+                    <p><%= msg %></p>
+                <% }) %>
+            </div>
+        <form% } %>
+
+        <form action="/new-project" method="POST" class="project-form">
+
+            <div class="form-group">
+                <label for="organizationId">Partner Organization *</label>
+                <select name="organizationId" id="organizationId" required>
+                    <option value="" disabled selcetd>Select an Organization....</option>
+                    <% organization.forEach(function(org) {%>
+                        <option value="<%= org.organization_id %>"><%= org.name %></option>
+                    <% }); %>
+                </select>        
+            </div>
+
+            <div class="form-group">
+                <label for="title">Project Title *</label>
+                <input type="text" name="title" id="title" placeholder="e.g., Community Cleanup Drive" required>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location *</label>
+                <input type="text" name="location" id="location" placeholder="e.g., Harare Central Park" required>
+            </div>
+
+            <div class="form-group">
+                <label for="date">Project Date *</label>
+                <input type="date" name="date" id="date" required>
+            </div>
+
+             <div class="form-group">
+                <label for="description">Project Description *</label>
+                <textarea name="description" id="description" rows="5" placeholder="Provide details about the project goals and coodination...." required></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Create Project</button>
+                <a href="/projects" class="btn btn-secondary">Cancel</a>
+            </div>
+
+        </form>
+
+    </main>
+    
+</body>
+</html>

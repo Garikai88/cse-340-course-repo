@@ -1,6 +1,7 @@
 // 1. Import any needed model functions
-import { getAllCategories } from "../models/categories.js";
+import { getAllCategories, getCategoriesByProject, updateCategoryAssignments } from "../models/categories.js";
 import * as categoryModel from '../models/categories.js';
+import {getProjectDetails} from '../moodels/projects.js';
 
 // 2. Define any controller functions
 const showCategoriesPage = async (req, res, next) => {
@@ -44,6 +45,41 @@ const showCategoryDetailsPage = async (req, res, next) => {
         
     }
 };
+
+/**
+ * New: This renders the form to assign categories to a specific project (GET)
+ * Route: /assign-categories/:projectId
+ */
+const showAssignCategoriesForm = async (req, res, next) => {
+    try {
+        const projectId = req.params.projectId;
+
+        // We gather all required data components in parallel
+        const projectDetails = await getProjectDetails(projectId);
+        const allCategories = await getAllCategories();
+        const assignedCategories = await getCategoriesByProject(projectId);
+
+        const title = "Assign Categories to Project";
+
+        // We then render the template view and pass down our collected datasets
+        res.render('assign-categories', {
+            title,
+            projectDetails,
+            allCategories,
+            assignedCategories
+        });
+
+    } catch (error) {
+        console.error("Error display assign categories form:", error);
+        next(error);
+
+    }
+};
+
+/**
+ * New: Process the submitted categories checkbox array data (POST)
+ * Route: /ass
+ */
 
 // 3. Export any controller functions
 export {showCategoriesPage, showCategoryDetailsPage};

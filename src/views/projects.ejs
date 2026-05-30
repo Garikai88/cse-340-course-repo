@@ -10,6 +10,11 @@
     <%- include('partials/header') %>
     <main>
         <h1><%= title %></h1>
+
+        <div class="action-bar" style="margin-bottom: 20px;">
+            <p><a href="/new-project" class="btn btn-success">Add a New Service Project</a></p>
+        </div>
+
         <h2>Upcoming Service Projects</h2>
         <ul>
             <% if (projects && projects.length > 0) { %>
@@ -22,16 +27,18 @@
                                     year: 'numeric',
                                     month: 'long',
                                     day: 'numeric',
-                                    timezone: 'UTC' // Prevents time zone shifts from changing the date 
+                                    timeZone: 'UTC' // Prevents time zone shifts from changing the date 
                                 });
                             %>
                             <%= formattedDate %>:
                         </strong>
-                        <%= project.project_title %></em>
+                        
+                        <a href="/project/<%= project.project_id %>"><%= project.project_title %></a>
+                        
                         <em>(<%= project.organization_name %>)</em>
                     </li>
                 <%}); %>
-            <li%} else { %>
+            <%} else { %>
                 <li>No upcoming service projects found at this time.</li>
             <% } %>
         </ul>

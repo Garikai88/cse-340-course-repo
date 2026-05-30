@@ -1,4 +1,4 @@
-<main%- include('../partials/header') %>
+<%- include('../partials/header') %>
 
 <main class="container">
     <section class="category-header">
@@ -7,12 +7,12 @@
     </section>
 
     <section class="projects-grid">
-        <p% if (projects && projects.length > 0) { %>
+        <% if (projects && projects.length > 0) { %>
             <div class="card-wrapper">
-                <a% projects.forEach(project => { %>
+                <% projects.forEach(project => { %>
                     <article class="project-card">
                         <h2>
-                            <a href="/projects/<%= project.project_d %>">
+                            <a href="/projects/<%= project.project_id %>">
                                 <%= project.title %>
                             </a>
                         </h2>
