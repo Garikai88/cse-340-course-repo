@@ -2,10 +2,24 @@
 // src/controllers/categories.js
 
 // 1. Import any needed model functions
+import {body, validationResult} from 'express-validator'; // This is imported for assignment validation 
 import { getAllCategories, getCategoriesByProject, updateCategoryAssignments } from "../models/categories.js";
 import * as categoryModel from '../models/categories.js';
 // FIXED: Corrected the typo from '../moodels/projects.js' to '../models/projects.js'
 import { getProjectDetails } from '../models/projects.js'; 
+
+/**
+ * EXPORTED VALIDATION SCHEMA
+ * Server-side rules: Name is required, length min 3 and max 100
+ */
+export const categoryValidation = [
+    body('name')
+    .trim()
+    .notEmpty().withMessage('Category name is required.')
+    .isLength({ min:3, max: 100}).withMessage('Category name must be between 3 and 100 characters.')
+];
+
+
 
 /**
  * Controller to render the main list of all categories
@@ -65,8 +79,11 @@ export const showAssignCategoriesForm = async (req, res, next) => {
 
         // Gather all required data components in parallel using existing model functions
         const projectDetails = await getProjectDetails(projectId);
-        const allCategories = await getAllCategories();
+        const categories = await getAllCategories();
         const assignedCategories = await getCategoriesByProject(projectId);
+
+        // OPTIMIZED: WE map the object here to extraxt just the entries into a flat array of numbers/IDs [1, 3, 5]
+        const assignedCategoryIds = assignedCategories.map(cat => cat.category_id);
 
         const title = "Assign Categories to Project";
 
@@ -74,8 +91,9 @@ export const showAssignCategoriesForm = async (req, res, next) => {
         res.render('assign-categories', {
             title,
             projectDetails,
-            allCategories,
-            assignedCategories
+            categories,
+            assignedCategories, // This is passed down as a clean array of IDs
+            projectId // Pass the projectId for form action URL construction in the EJS template 
         });
     } catch (error) {
         console.error("Error displaying assign categories form:", error);
@@ -94,7 +112,10 @@ export const processAssignCategoriesForm = async (req, res, next) => {
         const projectId = req.params.projectId;
 
         // 2. Get the selected category IDs from the request body checkbox group (Assume array or default to empty)
-        const categoryIds = req.body.categories || [];
+        let categoryIds = req.body.categoryIds || [];
+        if (!Array.isArray(categoryIds)) {
+            categoryIds = [categoryIds];
+        }
 
         // 3. Update the many-to-many junction assignments in the database using model
         await updateCategoryAssignments(projectId, categoryIds);
@@ -103,9 +124,83 @@ export const processAssignCategoriesForm = async (req, res, next) => {
         req.flash('success', 'Project categories synchronized successfully.');
 
         // 5. Redirect the user back to the project details page
-        res.redirect(`/project/${projectId}`);
+        res.redirect(`/projects/${projectId}`);
     } catch (error) {
         console.error("Error processing category assignments:", error);
         next(error);
     }
 };
+
+// ASSIGNMENT METHOD ADDITIONS
+
+/**
+ * Requirement 2: We will render the Create New Category Form View
+ */
+export const showNewCategoryForm = (req, res) => {
+    res.render('categories/new-category', {title: 'Add New Category'});
+};
+
+/**
+ * Rquirement 2: To process the New Category Form Submission with Server-side validation check
+ */
+export const processNewCategoryForm = async (req, res, next) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            errors.array().forEach(error => req.flash('error', error.msg));
+            return res.redirect('/new-category');
+        }
+
+        const {name} = req.body;
+        await categoryModel.createCategory(name);
+
+        req.flash('success', 'Category created successfully!');
+        res.redirect('/categories');
+    } catch (error) {
+        console.error('Error in processNewCategoryFrom:', error);
+        next(error);
+    }
+};
+
+/**
+ * Requirement 3: We then render the Eidt Category Form View
+ */
+export const showEditCategoryForm = async (req, res, next) => {
+    try {
+        const categoryId = parseInt(req.params.id, 10);
+        const category = await categoryModel.getCategoryById(categoryId);
+
+        if (!category) {
+            return res.status(404).render('errors/404', {title: 'Category Not Found'});
+        } 
+
+        res.render('categories/edit-category', {title: 'Edit Category', category});
+
+    } catch (error) {
+        console.error('Error in showEditCategoryForm', error);
+        next(error);
+    }
+};
+
+/**
+ * Requirement 3: We then process the Edit Category Form Submission with Server-side validation check
+ */
+export const processEditCategoryForm = async (req, res, next) => {
+    const categoryId = parseInt(req.params.id, 10);
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            errors.array().forEach(error => req.flash('error', error.msg));
+            return res.redirect(`/edit-category/${categoryId}`);
+        }
+
+        const {name} = req.body;
+        await categoryModel.updateCategory(categoryId, name);
+
+        req.flash('success', 'Category updated successfully!');
+        res.redirect(`category/${categoryId}`); // This redirects back to single category detail view
+    } catch (error) {
+        console.error('Error in processEditCategoryForm:', error);
+        next(error);
+    };
+}

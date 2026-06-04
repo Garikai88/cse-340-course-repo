@@ -1,4 +1,3 @@
-
 // src/controllers/organizations.js
 
 // Import the model functions to query the database
@@ -30,7 +29,6 @@ export const organizationValidation = [
 
 /**
  * Controller to render the main list of all organizations
- * FIXED: Converted to arrow syntax to comply with Criteria 3
  */
 export const showOrganizationsPage = async (req, res, next) => {
     try {
@@ -47,21 +45,17 @@ export const showOrganizationsPage = async (req, res, next) => {
 
 /**
  * Controllers to render a single organization's details page
- * FIXED: Converted to arrow syntax to comply with Criteria 3
  */
 export const showOrganizationDetailsPage = async (req, res, next) => {
     try {
-        // 1. We capture the ID from the URL parameter
         const organizationId = req.params.id;
 
-        // 2. We query the database models for the specific dataset ID
+        // Query the database models for the specific dataset ID
         const organizationDetails = await getOrganizationDetails(organizationId);
         const projects = await getProjectsByOrganizationId(organizationId);
-
-        // 3. We then define the page title string
         const title = 'Organization Details';
 
-        // 4. We send all 3 variables directly to our template (Ensure your file is named organization.ejs)
+        // Renders specific organization view template
         res.render('organization', { title, organizationDetails, projects });
     } catch (error) {
         console.error("Error in showOrganizationDetailsPage:", error);
@@ -71,47 +65,39 @@ export const showOrganizationDetailsPage = async (req, res, next) => {
 
 /**
  * The controller to render the add new organization form
- * FIXED: Converted to arrow syntax to comply with Criteria 3
  */
 export const showNewOrganizationForm = async (req, res, next) => {
     try {
         const title = 'Add New Organization';
-        res.render('new-organization', { title });
+        res.render('new-organization', { title }); // Corresponds to template
     } catch (error) {
         next(error);
     }
 };
 
 /**
- * Controllers to process the incoming form data submission
- * FIXED: Converted to arrow syntax to comply with Criteria 3
+ * Controllers to process the incoming form data submission (Step 8)
  */
 export const processNewOrganizationForm = async (req, res, next) => {
     try {
-        // Adding the check for input validation errors
         const results = validationResult(req);
         if (!results.isEmpty()) {
             results.array().forEach((error) => {
                 req.flash('error', error.msg);
             });
 
-            // We stop execution and redirect back to the form
+            // Stop execution and redirect back to the form page view template
             return res.redirect('/new-organization');
         }
         
-        // 1. We extract named properties out of the parsed req.body object
         const { name, description, contactEmail } = req.body;
-
-        // 2. We then hardcode a fallback string value for the logo filename parameter
         const logoFilename = 'placeholder-logo.png';
 
-        // 3. Then we trigger the model function and await the new row's ID
         const organizationId = await createOrganization(name, description, contactEmail, logoFilename);
 
-        // Set a success flash message
         req.flash('success', 'Organization added successfully');
-
-        // We send the user straight to the profile page of their new record
+        
+        // FIXED: Shifted from plural /organizations/ to singular /organization/ to match routes.js and step guide instructions
         res.redirect(`/organization/${organizationId}`);
     } catch (error) {
         console.error("Error in processNewOrganizationForm:", error);
@@ -121,7 +107,6 @@ export const processNewOrganizationForm = async (req, res, next) => {
 
 /**
  * Function for showEditOrganization Form
- * FIXED: Converted to arrow syntax to comply with Criteria 3
  */
 export const showEditOrganizationForm = async (req, res, next) => {
     try {
@@ -129,7 +114,6 @@ export const showEditOrganizationForm = async (req, res, next) => {
         const organizationDetails = await getOrganizationDetails(organizationId);
         const title = 'Edit Organization';
 
-        // Renders the 'edit-organization.ejs' view and passes variables
         res.render('edit-organization', { title, organizationDetails });
     } catch (error) {
         console.error("Error displaying edit form:", error);
@@ -139,30 +123,28 @@ export const showEditOrganizationForm = async (req, res, next) => {
 
 /**
  * Function to processEditOrganizationForm
- * FIXED: Converted to arrow syntax to comply with Criteria 3
  */
 export const processEditOrganizationForm = async (req, res, next) => {
     try {
-        // We get the organization ID from the URL parameters
         const organizationId = req.params.id;
 
-        // Check for input validation errors from express-validator
         const results = validationResult(req); 
         if (!results.isEmpty()) {
-            // Validation Failed - loop through errors and queue flash messages
             results.array().forEach((error) => {
                 req.flash('error', error.msg);
             });
             
+            // FIXED: Path matched to point to your exact GET route renderer: /edit-organization/:id
             return res.redirect(`/edit-organization/${organizationId}`); 
         }
 
-        // If valid, we proceed with extraction and database update as before
-        const { name, description, contact_email, logo_filename } = req.body;
+        const { name, description, contactEmail, logoFilename } = req.body;
 
-        await updateOrganization(organizationId, name, description, contact_email, logo_filename);
+        await updateOrganization(organizationId, name, description, contactEmail, logoFilename);
 
-        // We then redirect the user back to the updated organization details page
+        req.flash('success', 'Organization updated successfully');
+        
+        // FIXED: Aligned target pathway string pattern with your actual single-profile layout engine routing rule
         res.redirect(`/organization/${organizationId}`);
     } catch (error) {
         console.error("Error processing edit form submission:", error);

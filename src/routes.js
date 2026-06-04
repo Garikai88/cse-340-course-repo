@@ -1,7 +1,3 @@
-
-
-
-
 // src/routes.js
 import express from 'express';
 import { showHomePage } from './controllers/index.js';
@@ -18,13 +14,22 @@ import {
     showProjectsPage, 
     showProjectDetailsPage, 
     showNewProjectForm, 
-    processNewProjectForm 
+    processNewProjectForm,
+    projectValidation,         // IMPORTED: Validation schema rules array
+    showEditProjectForm,        // ADDED for Step 4
+    processEditProjectForm      // ADDED for Step 4
 } from './controllers/projects.js';
 import { 
     showCategoriesPage, 
     showCategoryDetailsPage,
     showAssignCategoriesForm,      // ADDED for Category Assignments
-    processAssignCategoriesForm    // ADDED for Category Assignments
+    processAssignCategoriesForm,
+    // ADDED for Category Assignments
+    showNewCategoryForm,
+    processNewCategoryForm,
+    showEditCategoryForm,
+    processEditCategoryForm,
+    categoryValidation
 } from './controllers/categories.js';
 import { testErrorPage } from './controllers/errors.js';
 
@@ -43,24 +48,45 @@ router.get('/edit-organization/:id', showEditOrganizationForm);
 router.post('/new-organization', organizationValidation, processNewOrganizationForm);
 router.post('/edit-organization/:id', organizationValidation, processEditOrganizationForm);
 
+
 // --- Service Project Routes ---
 router.get('/projects', showProjectsPage);
-// FIXED: Changed from '/projects/:id' to '/project/:id' to fix the 404 error
-router.get('/project/:id', showProjectDetailsPage); 
+
+// ALIGNED: Plural pathing matches your controller redirects and cancel actions
+router.get('/projects/:id', showProjectDetailsPage); 
 router.get('/new-project', showNewProjectForm);
 
-// Project POST processing handler
-router.post('/new-project', processNewProjectForm);
+// FIXED FOR STEP 7: Routes no use /edit-project/:id to match task specifications exactly
+router.get('/edit-project/:id', showEditProjectForm);
+
+// Project POST processing handlers (With projectValidation injected!)
+router.post('/new-project', projectValidation, processNewProjectForm);
+
+// FIXED FOR STEP 7: Form processing route updated to match specificatin exactly
+router.post('/edit-project/:id', projectValidation, processEditProjectForm);
 
 // --- Service Categories & Assignment Routes ---
 router.get('/categories', showCategoriesPage);
 router.get('/category/:id', showCategoryDetailsPage);
 
-// STEP 3: Category Assignment Routes
-router.get('/assign-categories/:projectId', showAssignCategoriesForm); //
-router.post('/assign-categories/:projectId', processAssignCategoriesForm); //
+// ASSIGNMENT REQUIREMENT: Created Category endpoints
+router.get('/new-category', showNewCategoryForm);
+router.post('/new-category', categoryValidation, processEditCategoryForm);
 
-// --- Error Handling Routes --- 
+//FIXED FOR STEP 3: Category assignment sync paths
+router.get('/project/:projectId/assign-categories', showAssignCategoriesForm); 
+router.post('/project/:projectId/assign-categories', processAssignCategoriesForm); 
+
+// --- Error Handling Routes ---
 router.get('/test-error', testErrorPage);
 
 export default router;
+
+
+
+
+
+
+
+
+

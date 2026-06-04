@@ -1,4 +1,4 @@
-<div%- include('partials/header') %>
+<%- include('partials/header') %>
 <main>
     <h1><%= title %></h1>
 
@@ -20,7 +20,7 @@
 
         <div class="form-group">
             <label for="logo_filename">Logo Filename:</label>
-            <input type="text" id="logo_filename" name="logo_filename" value="<%= organizationDetails.logo_filename %>">
+            <input type="text" id="logo_filename" name="logoFilename" value="<%= organizationDetails.logo_filename %>">
         </div>
 
         <button type="submit">Update Organization</button>

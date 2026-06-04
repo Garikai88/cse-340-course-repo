@@ -1,32 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/css/main.css">
-</head>
-<body>
-    <%- include('partials/header') %>
+<%- include('../partials/header') %>
 
-    <main>
+<main class="container my-4" style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #e9ecef; padding-bottom: 10px;">
         <h1><%= title %></h1>
-        <ul>
-            <% if (categories && categories.length > 0) { %> 
-                <% categories.forEach(category => { %>
+        
+        <a href="/edit-category/<%= category.category_id %>" class="btn btn-warning" style="text-decoration: none; padding: 8px 16px; background-color: #ffc107; color: #212529; border-radius: 4px; font-weight: bold;">
+            ✏️ Edit Category Name
+        </a>
+    </div>
+
+    <div class="card my-3" style="background: #ffffff; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px;">
+        <h3 style="margin-top: 0;">Assigned Service Projects</h3>
+        
+        <% if (projects && projects.length > 0) { %>
+            <ul style="padding-left: 20px; line-height: 1.8;">
+                <% projects.forEach(project => { %>
                     <li>
-                        <a href="/category/<%= category.category_id %>">
-                            <%= category.name %>
-                        </a>                        
+                        <a href="/projects/<%= project.project_id %>" style="color: #0056b3; font-weight: 500; text-decoration: none;">
+                            <%= project.title %>
+                        </a>
+                        <% if (project.location) { %>
+                            <span style="color: #6c757d; font-size: 0.9rem;"> — (<%= project.location %>)</span>
+                        <% } %>
                     </li>
                 <% }); %>
-            <% } else { %>
-                <li>No project categories found at this time.</li>
-            <% } %>
-        </ul>
-    </main>
+            </ul>
+        <% } else { %>
+            <p style="color: #6c757d; font-style: italic;">No service projects have been assigned to this category yet.</p>
+        <% } %>
+    </div>
 
-    <%- include('partials/footer') %>
-    
-</body>
-</html>
+    <div style="margin-top: 30px; border-top: 1px solid #dee2e6; padding-top: 15px;">
+        <a href="/categories" style="color: #495057; text-decoration: none; font-weight: 500;">
+            ⬅️ Back to All Categories
+        </a>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

@@ -100,3 +100,49 @@ export const updateCategoryAssignments = async (projectId, categoryIds) => {
         throw error;
     }
 };
+
+// ASSIGNMENT ADDITIONS: WE INSERT & UPDATE CATEGORIES
+/**
+ * Requirement 2: Inserts a brand new category in the 'category' table
+ * Parameterized to ensure safety SQL Injection attacks
+ */
+export const createCategory = async (name) => {
+    const queryText = `
+    INSERT INTO category (name)
+    VALUES ($1)
+    RETURNING *;
+    `;
+    try {
+        const result = await db.query(queryText, [name]);
+        if (result.rows.length === 0) {
+            throw new Error('Failed to insert new category.');
+        }
+        return result.rows[0];
+    } catch (error) {
+        console.error('Error executing createCategory query:', error);
+        throw error;
+    }
+};
+
+/**
+ * Requirement 3: Updates an existing category name by its ID inside the 'category' table
+ * 
+ */
+export const updateCategory = async (categoryId, name) => {
+    const queryText = `
+    UPDATE category
+    SET name = $1
+    WHERE category_id = $2
+    RETURNING *;
+    `;
+    try {
+        const result = await db.query(queryText, [name, categoryId]);
+        if (result.rows.length === 0) {
+            throw new Error('Category not found or update criteria failed');
+        }
+        return result.rows[0];
+    } catch (error) {
+        console.error('Error executing updateCategory query:', error);
+        throw error;
+    }
+};

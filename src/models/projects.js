@@ -44,7 +44,7 @@ const getProjectsByOrganizationId = async (organizationId) => {
     return result.rows;
 };
 
-// iNSERTS A NEW SERVICE PROJECT INTO THE DATABASE
+// 4. INSERTS A NEW SERVICE PROJECT INTO THE DATABASE
 const createProject = async (title, description, location, date, organizationId) => {
     const query = `
         INSERT INTO service_project (title, description, location, project_date, organization_id)
@@ -52,14 +52,14 @@ const createProject = async (title, description, location, date, organizationId)
         RETURNING project_id;
         `;
 
-        const queryParams = [title, description, location, date, organizationId];
-        const result = await db.query(query, queryParams);
+    const queryParams = [title, description, location, date, organizationId];
+    const result = await db.query(query, queryParams);
 
-        if (result.rows.length == 0) {
-            throw new Error('Failed to create project');
-        }
+    if (result.rows.length == 0) {
+        throw new Error('Failed to create project');
+    }
 
-        return result.rows[0].project_id;
+    return result.rows[0].project_id;
 };
 
 // 5. Retrieve a single project by its ID for details view and forms
@@ -79,14 +79,38 @@ const getProjectDetails = async (projectId) => {
     return result.rows[0]; // Return the single project object found
 };
 
+/**
+ * STEP 5: Core function to update an existing service project
+ * Includes organization_id parameter to allow reassigning the project to a new organization
+ */
+const updateProject = async (projectId, title, description, location, projectDate, organizationId) => {
+    // Parameterized SQL query to safely block SQL injections
+    const query = `
+        UPDATE service_project
+        SET title = $1, description = $2, location = $3, project_date = $4, organization_id = $5
+        WHERE project_id = $6
+        RETURNING project_id;
+    `;
+
+    const queryParams = [title, description, location, projectDate, organizationId, projectId];
+    const result = await db.query(query, queryParams);
+
+    // If the SQL statement does not return rows, throw an Error
+    if (result.rows.length === 0) {
+        throw new Error('Service project not found or update failed');
+    }
+
+    return result.rows[0].project_id;
+};
+
 // Export all functions together so no controllers break!
 export { 
     getAllProjects, 
     getAllProjectsWithOrganizations, 
     getProjectsByOrganizationId, 
     createProject,
-    getProjectDetails // <-- Add this here!
+    getProjectDetails,
+    updateProject // <--- Added for Step 5!
 };
-
 
 
