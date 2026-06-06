@@ -5,6 +5,7 @@ const connectionString = process.env.DATABASE_URL || process.env.DB_URL;
 
 
 
+
 /**
  * Connection pool for PostgreSQL database.
  * 
@@ -19,9 +20,10 @@ const connectionString = process.env.DATABASE_URL || process.env.DB_URL;
 const pool = new Pool({
     connectionString: connectionString,
     // This will safely allow self-signed certificates in production, disable for local dev
-    ssl: process.env.NODE_ENV === 'production'
-        ? {rejectUnauthorized: false}
-        : false
+    ssl: {
+        rejectUnauthorized: false
+    }
+        
 });
 
 /**
