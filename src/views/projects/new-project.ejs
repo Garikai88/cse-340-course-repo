@@ -1,13 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
-</head>
-<body>
+<%- include('../partials/header') %>
     <main class="form-container">
-        <h1>Edit Service Project</h1>
+        <h1>Add New Service Project</h1>
 
         <% if (messages && messages.error) { %>
             <div class="flash-message error-messages">
@@ -17,15 +10,15 @@
             </div>
         <% } %>
 
-        <form action="/projects/edit/<%= projectDetails.project_id %>" method="POST" class="project-form">
+        <form action="/new-project" method="POST" class="project-form">
 
             <div class="form-group">
                 <label for="organizationId">Partner Organization *</label>
                 <select name="organizationId" id="organizationId" required>
-                    <option value="" disabled>Select an Organization....</option>
+                    <option value="" selected disabled>Select an Organization....</option>
                     
                     <% organizations.forEach(function(org) { %>
-                        <option value="<%= org.organization_id %>" <%= org.organization_id === projectDetails.organization_id ? 'selected' : '' %>>
+                        <option value="<%= org.organization_id %>">
                             <%= org.name %>
                         </option>
                     <% }); %>
@@ -34,39 +27,30 @@
 
             <div class="form-group">
                 <label for="title">Project Title *</label>
-                <input type="text" name="title" id="title" value="<%= projectDetails.title %>" required>
+                <input type="text" name="title" id="title" required>
             </div>
 
             <div class="form-group">
                 <label for="location">Location *</label>
-                <input type="text" name="location" id="location" value="<%= projectDetails.location %>" required>
+                <input type="text" name="location" id="location" required>
             </div>
 
             <div class="form-group">
                 <label for="date">Project Date *</label>
-                <% 
-                    let formattedDate = '';
-                    if (projectDetails.project_date) {
-                        const d = new Date(projectDetails.project_date);
-                        formattedDate = d.toISOString().split('T')[0];
-                    }
-                %>
-                <input type="date" name="date" id="date" value="<%= formattedDate %>" required>
+                <input type="date" name="date" id="date" required>
             </div>
 
              <div class="form-group">
                 <label for="description">Project Description *</label>
-                <textarea name="description" id="description" rows="5" required><%= projectDetails.description %></textarea>
+                <textarea name="description" id="description" rows="5" required></textarea>
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-                <a href="/projects/<%= projectDetails.project_id %>" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Add Project</button>
+                <a href="/projects" class="btn btn-secondary">Cancel</a>
             </div>
 
         </form>
 
     </main>
-    
-</body>
-</html>
+<%- include('../partials/footer') %>
