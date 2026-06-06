@@ -14,10 +14,10 @@ import {
     showProjectsPage, 
     showProjectDetailsPage, 
     showNewProjectForm, 
-    processNewProjectForm,
-    projectValidation,         // IMPORTED: Validation schema rules array
+    processNewForm,         // IMPORTED: Validation schema rules array
     showEditProjectForm,        // ADDED for Step 4
-    processEditProjectForm      // ADDED for Step 4
+    processEditProjectForm,
+    projectValidation
 } from './controllers/projects.js';
 import { 
     showCategoriesPage, 
@@ -60,7 +60,7 @@ router.get('/new-project', showNewProjectForm);
 router.get('/edit-project/:id', showEditProjectForm);
 
 // Project POST processing handlers (With projectValidation injected!)
-router.post('/new-project', projectValidation, processNewProjectForm);
+router.post('/new-project', projectValidation, processNewForm);
 
 // FIXED FOR STEP 7: Form processing route updated to match specificatin exactly
 router.post('/edit-project/:id', projectValidation, processEditProjectForm);
@@ -71,11 +71,11 @@ router.get('/category/:id', showCategoryDetailsPage);
 
 // ASSIGNMENT REQUIREMENT: Created Category endpoints
 router.get('/new-category', showNewCategoryForm);
-router.post('/new-category', categoryValidation, processNewForm);
+router.post('/new-category', categoryValidation, processNewCategoryForm);
 
 // Category Endpoints
 router.get('/edit-category/:id', showEditCategoryForm);
-router.post('/edit-category', categoryValidation, processEditCategoryForm);
+router.post('/edit-category/:id', categoryValidation, processEditCategoryForm);
 
 //FIXED FOR STEP 3: Category assignment sync paths
 router.get('/project/:projectId/assign-categories', showAssignCategoriesForm); 
