@@ -14,17 +14,16 @@ import {
     showProjectsPage, 
     showProjectDetailsPage, 
     showNewProjectForm, 
-    processNewForm,         // IMPORTED: Validation schema rules array
-    showEditProjectForm,        // ADDED for Step 4
+    processNewForm,         
+    showEditProjectForm,        
     processEditProjectForm,
     projectValidation
 } from './controllers/projects.js';
 import { 
     showCategoriesPage, 
     showCategoryDetailsPage,
-    showAssignCategoriesForm,      // ADDED for Category Assignments
+    showAssignCategoriesForm,      
     processAssignCategoriesForm,
-    // ADDED for Category Assignments
     showNewCategoryForm,
     processNewCategoryForm,
     showEditCategoryForm,
@@ -56,13 +55,13 @@ router.get('/projects', showProjectsPage);
 router.get('/projects/:id', showProjectDetailsPage); 
 router.get('/new-project', showNewProjectForm);
 
-// FIXED FOR STEP 7: Routes no use /edit-project/:id to match task specifications exactly
+// FIXED FOR STEP 7: Routes use /edit-project/:id to match task specifications exactly
 router.get('/edit-project/:id', showEditProjectForm);
 
 // Project POST processing handlers (With projectValidation injected!)
 router.post('/new-project', projectValidation, processNewForm);
 
-// FIXED FOR STEP 7: Form processing route updated to match specificatin exactly
+// FIXED FOR STEP 7: Form processing route updated to match specification exactly
 router.post('/edit-project/:id', projectValidation, processEditProjectForm);
 
 // --- Service Categories & Assignment Routes ---
@@ -77,7 +76,7 @@ router.post('/new-category', categoryValidation, processNewCategoryForm);
 router.get('/edit-category/:id', showEditCategoryForm);
 router.post('/edit-category/:id', categoryValidation, processEditCategoryForm);
 
-//FIXED FOR STEP 3: Category assignment sync paths
+// FIXED FOR STEP 3: Category assignment sync paths
 router.get('/project/:projectId/assign-categories', showAssignCategoriesForm); 
 router.post('/project/:projectId/assign-categories', processAssignCategoriesForm); 
 
