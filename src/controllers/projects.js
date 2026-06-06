@@ -1,11 +1,10 @@
-
 // 1. Import needed model functions at the top
 import { body, validationResult } from 'express-validator'; 
 import { 
     getAllProjectsWithOrganizations, 
     createProject, 
-    getProjectDetails, // FIXED: Imported to read single project metrics
-    updateProject      // FIXED: Imported from Step 5 to handle database updates
+    getProjectDetails, 
+    updateProject      
 } from '../models/projects.js'; 
 import { getAllOrganizations } from '../models/organizations.js'; 
 import * as categoryModel from '../models/categories.js';
@@ -59,8 +58,6 @@ export const showProjectsPage = async (req, res, next) => {
 export const showProjectDetailsPage = async (req, res, next) => {
     try {
         const projectId = parseInt(req.params.id, 10);
-
-        // FIXED: Replaced commented placeholder with your working model function
         const project = await getProjectDetails(projectId);
 
         if (!project) {
@@ -87,8 +84,14 @@ export const showNewProjectForm = async (req, res, next) => {
     try {
         const organizations = await getAllOrganizations(); 
         const title = 'Add New Service Project';
+        const messages = req.flash ? req.flash() : {};
 
-        res.render('new-project', { title, organizations }); 
+        res.render('projects/new-project', {
+            title,
+            organizations,
+            messages
+        });
+
     } catch (error) {
         console.error("Error displaying new project form:", error);
         next(error);
@@ -96,8 +99,9 @@ export const showNewProjectForm = async (req, res, next) => {
 };
 
 /** * Controller to process incoming new project form data submissions
+ * RENAMED to processNewForm to match what your route structure expects on Render!
  */
-export const processNewProjectForm = async (req, res, next) => {
+export const processNewForm = async (req, res, next) => {
     try {
         const errors = validationResult(req); 
         
@@ -122,24 +126,33 @@ export const processNewProjectForm = async (req, res, next) => {
 
 /**
  * STEP 4 ADDITION: Controller to render the Edit Service Project Form view
- * Fetches current details and all organizations for the template dropdown
  */
 export const showEditProjectForm = async (req, res, next) => {
     try {
         const projectId = parseInt(req.params.id, 10);
         
-        // Fetch existing record data to populate our inputs
-        const projectDetails = await getProjectDetails(projectId);
+        const projectResult = await getProjectDetails(projectId);
+        const projectDetails = projectResult.rows ? projectResult.rows[0] : projectResult;
         
         if (!projectDetails) {
             return res.status(404).render('errors/404', { title: 'Project Not Found' });
         }
 
-        // Fetch organizations list so user can re-assign parent organization ownership if needed
-        const organizations = await getAllOrganizations();
-        const title = 'Edit Service Project';
+        const orgResult = await getAllOrganizations();
 
-        res.render('update-project', { title, projectDetails, organizations });
+        // FIXED: Changed 'organizationsResult' to 'orgResult' to eliminate your reference runtime crash
+        const organizationsList = orgResult.rows ? orgResult.rows : orgResult;
+
+        const title = 'Edit Service Project';
+        const messages = req.flash ? req.flash() : {};
+
+        res.render('projects/edit-project', {
+            title,
+            projectDetails,
+            organizations: organizationsList,
+            messages
+        });
+
     } catch (error) {
         console.error("Error displaying edit project form:", error);
         next(error);
@@ -153,7 +166,6 @@ export const processEditProjectForm = async (req, res, next) => {
     try {
         const projectId = parseInt(req.params.id, 10);
 
-        // Run validation check
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             errors.array().forEach((error) => {
@@ -162,18 +174,17 @@ export const processEditProjectForm = async (req, res, next) => {
             return res.redirect(`/edit-project/${projectId}`);
         }
 
-        // Extract update payloads matching the names on update-project.ejs input elements
         const { title, description, location, date, organizationId } = req.body;
 
-        // Fire model function from Step 5
         await updateProject(projectId, title, description, location, date, organizationId);
 
         req.flash('success', 'Service project updated successfully!');
-        
-        // Redirect user straight back to updated single project page layout
         res.redirect(`/projects/${projectId}`);
     } catch (error) {
         console.error("Error processing project update request:", error);
         next(error);
     }
 };
+
+// We added this at the bottom 
+export const processNewProjectForm = processNewForm;
