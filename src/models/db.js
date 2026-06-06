@@ -1,5 +1,10 @@
 import { Pool } from 'pg';
 
+// Fallback logic to check both commonly used environment variable strings
+const connectionString = process.env.DATABASE_URL || process.env.DB_URL;
+
+
+
 /**
  * Connection pool for PostgreSQL database.
  * 
@@ -12,8 +17,11 @@ import { Pool } from 'pg';
  * postgresql://username:password@host:port/database
  */
 const pool = new Pool({
-    connectionString: process.env.DB_URL,
-    ssl: true
+    connectionString: connectionString,
+    // This will safely allow self-signed certificates in production, disable for local dev
+    ssl: process.env.NODE_ENV === 'production'
+        ? {rejectUnauthorized: false}
+        : false
 });
 
 /**

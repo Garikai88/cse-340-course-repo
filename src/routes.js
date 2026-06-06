@@ -71,7 +71,11 @@ router.get('/category/:id', showCategoryDetailsPage);
 
 // ASSIGNMENT REQUIREMENT: Created Category endpoints
 router.get('/new-category', showNewCategoryForm);
-router.post('/new-category', categoryValidation, processEditCategoryForm);
+router.post('/new-category', categoryValidation, processNewForm);
+
+// Category Endpoints
+router.get('/edit-category/:id', showEditCategoryForm);
+router.post('/edit-category', categoryValidation, processEditCategoryForm);
 
 //FIXED FOR STEP 3: Category assignment sync paths
 router.get('/project/:projectId/assign-categories', showAssignCategoriesForm); 
