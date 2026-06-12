@@ -98,7 +98,7 @@ const processLoginForm = async (req, res) => {
         // SUCCESS PATH: Store the clean user object inside the express-session data store
         // We will explicitly map the properties from the model query to keep things safe
         req.session.user = {
-            user_idid: user.user_id,
+            user_id: user.user_id,
             name: user.name,  // This matches u.user_id from our model JOIN 
             email: user.email,  // This matches u.email from our model JOIN
             role_name: user.role_name // This matches r.role_name from your model JOIN
