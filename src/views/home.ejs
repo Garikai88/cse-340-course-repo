@@ -15,6 +15,9 @@
 
         <img class="main-logo" src="/images/cse340-service-network.png" alt="cse 340 service Network Logo">
     </main>
+    <% if (isLoggedIn) { %>
+        <p><a href="/dashboard">My Dashboard</a></p>
+    <% } %>
     <%- include('partials/footer') %>
     
 </body>

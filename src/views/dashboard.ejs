@@ -1,0 +1,31 @@
+<%- include('partials/header') %>
+
+<main class="container my-4" style="max-width: 600px; margin: 0 auto; padding: 20px;">
+    <h1><%= title %></h1>
+
+    <div class="card" style="background: #ffffff; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin-top: 20px;">
+        <h2>Dashboard</h2>
+
+        <p><strong>Username (Email):</strong> <%= user.email %></p>
+
+        <div class="dashboard-actions" style="margin-top: 20px;">
+            <a href="/logout" class="btn btn-secondary" style="text-decoration: none; padding: 8px 16px; background-color: #6c757d; color: white; border-radius: 4px;">Logout</a>
+        </div>
+    </div>
+
+    <% if (user && user.role_name === 'admin') { %>
+        <div class="admin-panel" style="margin-top: 25px; padding: 20px; background-color: #fff3cd; border: 1px solid #ffeeba; border-radius: 8px;">
+            <h3 style="color: #856404; margin-top: 0;">🛠️ Administrative Tools</h3>
+            <p style="color: #664d03;">As an authorized administrator, you have access to core platform registries and user account listings.</p>
+            
+            <div style="margin-top: 15px;">
+                <a href="/users" class="btn btn-warning" style="text-decoration: none; padding: 10px 20px; background-color: #ffc107; color: #212529; border-radius: 4px; font-weight: bold; display: inline-block;">
+                    👥 Manage Registered Users
+                </a>
+            </div>
+        </div>
+    <% } %>
+
+</main>
+
+<%- include('partials/footer') %>

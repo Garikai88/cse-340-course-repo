@@ -1,25 +1,35 @@
 <%- include('partials/header') %>
 <main>
-    <h1><%= title %></h1>
+    <% if (user && user.role_name === 'admin') { %>
 
-    <form action="/new-organization" method="POST">
-        <div class="form-group">
-            <label for="name">Organization Name</label>
-            <input type="text" id="name" name="name" required maxlength="150" />
+        <h1><%= title %></h1>
+
+        <form action="/new-organization" method="POST">
+            <div class="form-group">
+                <label for="name">Organization Name</label>
+                <input type="text" id="name" name="name" required maxlength="150" />
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" required maxlength="500"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="contactEmail">Contact Email</label>
+                <input type="email" id="contactEmail" name="contactEmail" required/>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create Organization</button>
+        </form>
+
+    <% } else { %>
+        <div class="unauthorized-box" style="text-align: center; padding: 40px 20px;">
+            <h2>Access Denied</h2>
+            <p style="color: #6c757d;">You do not have the necessary administrative privileges to add new partner organizations.</p>
+            <a href="/" class="btn btn-primary" style="text-decoration: none;">Return Home</a>
         </div>
-
-        <div class="form-group">
-            <label for="description">Description</label>
-            <textarea id="description" name="description" required maxlength="500"></textarea>
-        </div>
-
-        <div class="form-group">
-            <label for="contactEmail">Contact Email</label>
-            <input type="email" id="contactEmail" name="contactEmail" required/>
-        </div>
-
-        <button type="submit">Create Organization</button>
-    </form>
+    <% } %>
 
 </main>
 

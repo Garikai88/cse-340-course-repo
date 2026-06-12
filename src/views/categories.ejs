@@ -1,40 +1,39 @@
-<%- include('../partials/header') %>
+<%- include('partials/header') %>
 
 <main class="container my-4" style="max-width: 800px; margin: 0 auto; padding: 20px;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #e9ecef; padding-bottom: 10px;">
         <h1><%= title %></h1>
         
-        <a href="/edit-category/<%= category.category_id %>" class="btn btn-warning" style="text-decoration: none; padding: 8px 16px; background-color: #ffc107; color: #212529; border-radius: 4px; font-weight: bold;">
-            ✏️ Edit Category Name
-        </a>
-    </div>
-
-    <div class="card my-3" style="background: #ffffff; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px;">
-        <h3 style="margin-top: 0;">Assigned Service Projects</h3>
-        
-        <% if (projects && projects.length > 0) { %>
-            <ul style="padding-left: 20px; line-height: 1.8;">
-                <% projects.forEach(project => { %>
-                    <li>
-                        <a href="/projects/<%= project.project_id %>" style="color: #0056b3; font-weight: 500; text-decoration: none;">
-                            <%= project.title %>
-                        </a>
-                        <% if (project.location) { %>
-                            <span style="color: #6c757d; font-size: 0.9rem;"> — (<%= project.location %>)</span>
-                        <% } %>
-                    </li>
-                <% }); %>
-            </ul>
-        <% } else { %>
-            <p style="color: #6c757d; font-style: italic;">No service projects have been assigned to this category yet.</p>
+        <% if (user && user.role_name === 'admin') { %>
+            <a href="/new-category" class="btn btn-primary" style="text-decoration: none; padding: 8px 16px; background-color: #007bff; color: #ffffff; border-radius: 4px; font-weight: bold;">
+                ➕ Add New Category
+            </a>
         <% } %>
     </div>
 
-    <div style="margin-top: 30px; border-top: 1px solid #dee2e6; padding-top: 15px;">
-        <a href="/categories" style="color: #495057; text-decoration: none; font-weight: 500;">
-            ⬅️ Back to All Categories
-        </a>
+    <div class="categories-list" style="display: grid; gap: 15px;">
+        <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
+            <% categories.forEach(function(category) { %>
+                <div class="card" style="background: #ffffff; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <a href="/category/<%= category.category_id %>" style="font-size: 1.25rem; font-weight: bold; color: #0056b3; text-decoration: none;">
+                            <%= category.name %>
+                        </a>
+                    </div>
+                    
+                    <% if (user && user.role_name === 'admin') { %>
+                        <div>
+                            <a href="/edit-category/<%= category.category_id %>" class="btn btn-warning" style="text-decoration: none; padding: 6px 12px; background-color: #ffc107; color: #212529; border-radius: 4px; font-size: 0.9rem; font-weight: bold;">
+                                ✏️ Edit
+                            </a>
+                        </div>
+                    <% } %>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <p style="color: #6c757d; font-style: italic;">No categories found.</p>
+        <% } %>
     </div>
 </main>
 
-<%- include('../partials/footer') %>
+<%- include('partials/footer') %>

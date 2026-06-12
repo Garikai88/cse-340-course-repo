@@ -1,33 +1,45 @@
-<%- include('../partials/header') %>
+<%- include('../partials/header') %> 
 
-<main class="container">
-    <section class="category-header">
-        <h1><%= category.name %> Projects</h1>
-        <p class="breadcrumbs"><a href="/categories">All Categories</a> &gt; <%= catgory.name %></p>
-    </section>
+<main class="container my-4" style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #e9ecef; padding-bottom: 10px;">
+        <h1><%= title %></h1>
 
-    <section class="projects-grid">
-        <% if (projects && projects.length > 0) { %>
-            <div class="card-wrapper">
-                <% projects.forEach(project => { %>
-                    <article class="project-card">
-                        <h2>
-                            <a href="/projects/<%= project.project_id %>">
-                                <%= project.title %>
-                            </a>
-                        </h2>
-                        <p class="location"><strong>Location:</strong> <%= project.location %></p>
-                        <p class="description"><%= project.description %></p>
-                    </article> 
-                <% }) %>   
-            </div>
-        <% } else { %>
-            <div class="empty-state">
-                <p>No active service projects are currently filed under this category.</p>
-                <a href="/categories" class="btn">Return to Categories</a>
-            </div>
+        <% if (user && user.role_name === 'admin') { %>
+            <% if (typeof category !== 'undefined' && category) { %>
+                <a href="/edit-category/<%= category.category_id %>" class="btn btn-warning" style="text-decoration: none; padding: 8px 16px; background-color: #ffc107; color: #212529; border-radius: 4px; font-weight: bold;">
+                    ✏️ Edit Category Name
+                </a>
+            <% } %>    
         <% } %>
-    </section>
+    </div>
+
+    <div class="card my-3" style="background: #ffffff; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px;">
+        <h3 style="margin-top: 0;">Assigned Service Projects</h3>
+        
+        <% if (typeof projects !== 'undefined' && projects && projects.length > 0) { %>
+            <ul style="padding-left: 20px; line-height: 1.8;">
+                <% projects.forEach(project => { %>
+                    <li>
+                        <a href="/projects/<%= project.project_id %>" style="color: #0056b3; font-weight: 500; text-decoration: none;">
+                            <%= project.title %>
+                        </a>
+                        <% if (project.location) { %>
+                            <span style="color: #6c757d; font-size: 0.9rem;"> — (<%= project.location %>)</span>
+                        <% } %>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } else { %>
+            <p style="color: #6c757d; font-style: italic;">No service projects have been assigned to this category yet.</p>
+        <% } %>
+    </div>
+
+    <div style="margin-top: 30px; border-top: 1px solid #dee2e6; padding-top: 15px;">
+        <a href="/categories" style="color: #495057; text-decoration: none; font-weight: 500;">
+            ⬅️ Back to All Categories
+        </a>
+    </div>
 </main>
 
 <%- include('../partials/footer') %>
+

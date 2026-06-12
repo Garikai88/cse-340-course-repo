@@ -8,12 +8,26 @@
 </head>
 <body>
     <nav>
-        <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/organizations">Organizations</a></li>
-            <li><a href="/projects">Projects</a></li>
-            <li><a href="/categories">Categories</a></li>
-        </ul>
+        <a href="/">Home</a>
+        <a href="/organizations">Organizations</a>
+        <a href="/projects">Projects</a>
+        <a href="/categories">Categories</a>
+
+        <% if (locals.user && user.role_name === 'admin') { %>
+            <span class="admin-badge">| Admin:</span>
+            <a href="/new-organization">Add Organization</a>
+            <a href="/new-project">Add Projects</a>
+            <a href="/new-category">Add Category</a>
+            <a href="/users" style="font-weight: bold; color: #dc3545;">Manage Users</a> 
+        <% } %>
+        
+        <% if (locals.isLoggedIn) { %>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/logout">Logout</a>
+        <% } else { %> 
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+        <% } %>    
     </nav>
 
     <% const messages = flash(); %>
@@ -29,6 +43,3 @@
         </div>
     <% } %>
 <% }); %>
-    
-</body>
-</html>

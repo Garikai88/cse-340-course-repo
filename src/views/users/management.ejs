@@ -1,0 +1,72 @@
+<%- include('../partials/header') %>
+
+<main class="management-container" style="max-width: 900px; margin: 40px auto; padding: 0 20px;">
+    
+    <% if (user && user.role_name === 'admin') { %>
+        
+        <div class="management-header" style="border-bottom: 2px solid #e9ecef; padding-bottom: 15px; margin-bottom: 30px;">
+            <h1 style="margin: 0 0 10px 0; color: #212529;"><%= title %></h1>
+            <p style="margin: 0; color: #6c757d; font-size: 1.1rem;">Registered Accounts System Audit Directory</p>
+        </div>
+
+        <% if (messages && messages.error) { %>
+            <div class="flash-message error-messages" style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 4px; margin-bottom: 20px;">
+                <% messages.error.forEach(function(msg) { %>
+                    <p style="margin: 0;"><%= msg %></p>
+                <% }) %>
+            </div>
+        <% } %>
+
+        <div class="table-responsive" style="overflow-x: auto; background: #ffffff; border: 1px solid #dee2e6; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                        <th style="padding: 15px; font-weight: 600; color: #495057; width: 10%;">User ID</th>
+                        <th style="padding: 15px; font-weight: 600; color: #495057; width: 25%;">Full Name</th> <th style="padding: 15px; font-weight: 600; color: #495057; width: 45%;">Email (Username)</th>
+                        <th style="padding: 15px; font-weight: 600; color: #495057; width: 20%;">Security Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (users && users.length > 0) { %>
+                        <% users.forEach(account => { %>
+                            <tr style="border-bottom: 1px solid #dee2e6; transition: background-color 0.2s;">
+                                <td style="padding: 15px; font-weight: bold; color: #495057;"><%= account.user_id %></td>
+                                <td style="padding: 15px; color: #212529;"><%= account.name || 'N/A' %></td> <td style="padding: 15px; color: #212529;"><%= account.email %></td>
+                                <td style="padding: 15px;">
+                                    <span class="role-badge" 
+                                        style="padding: 6px 12px; border-radius: 50px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; color: #ffffff; background-color: <%= account.role_name === 'admin' ? '#dc3545' : '#6c757d' %>;">
+                                        <%= account.role_name %>
+                                    </span>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="4" style="padding: 30px; text-align: center; color: #6c757d;">No registered users found in the system.</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 25px;">
+            <a href="/dashboard" class="btn btn-secondary" style="text-decoration: none; padding: 10px 20px; background-color: #6c757d; color: white; border-radius: 4px; font-weight: 500; display: inline-block;">
+                ⬅️ Return to Dashboard
+            </a>
+        </div>
+
+    <% } else { %>
+        <div class="unauthorized-box" style="text-align: center; padding: 50px 20px; background: #fff5f5; border: 1px solid #ffe3e3; border-radius: 8px;">
+            <h2 style="color: #e53e3e; margin-top: 0;">🛑 Security Access Denied</h2>
+            <p style="color: #4a5568; max-width: 500px; margin: 10px auto 25px auto; line-height: 1.5;">
+                You do not possess the elevated administrative privileges required to view or audit user account registries.
+            </p>
+            <a href="/dashboard" class="btn btn-primary" style="text-decoration: none; padding: 12px 24px; background-color: #3182ce; color: white; border-radius: 4px; font-weight: bold;">
+                Return to Dashboard
+            </a>
+        </div>
+    <% } %>
+
+</main>
+
+<%- include('../partials/footer') %>

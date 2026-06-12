@@ -12,6 +12,12 @@
     
     <main>
         <h1><%= title %></h1>
+
+<% if (user && user.role_name === 'admin') { %>
+    <div class="admin-actions">
+        <a href="/new-organization" class="btn btn-add">➕ Add New Organization</a>
+    </div>
+<% } %>
         
         <p>Here are a few of our partner organizations:</p>
         <ul>

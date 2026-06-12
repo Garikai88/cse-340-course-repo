@@ -44,7 +44,8 @@ app.use(session({
     resave: false,                
     saveUninitialized: false,     
     cookie: {
-        secure: false,            // Set to false for HTTP localhost development
+        secure: false,              //This is crucial for HTTP localhost development environments
+        SameSite: 'lax',           // This forces modern browsers to store session IDs during redirects
         maxAge: 1000 * 60 * 60    // Keeps the user session active for an hour
     }
 }));
@@ -73,14 +74,29 @@ app.set('views', path.join(__dirname, 'src/views'));
  * ==========================================
  */
 app.use((req, res, next) => {
-    if (NODE_ENV === 'development') {
+    // Standardize comparison to check the raw process environment safely
+    if (process.env.NODE_ENV && process.env.NODE_ENV.toLowerCase() === 'development') {
         console.log(`${req.method} ${req.url}`);
     }
     next(); 
 });
 
+// This is for the Session State Tracking Middleware for UI Display Toggle
 app.use((req, res, next) => {
+    // 1. Safely initialize a default status value on res.locals
+    res.locals.isLoggedIn = false;
+    res.locals.user = null;
+
+    // 2. Double check if express-session has successfully attached the data structure
+    if (req.session && req.session.user) {
+        res.locals.isLoggedIn = true;
+        res.locals.user = req.session.user; // Exposes user profile data (name, email) to templates too!
+    }
+
+    // 3. Keep global environment variable exposure intact
     res.locals.NODE_ENV = NODE_ENV;
+
+    // 4. Always call next() to clear the pipe
     next();
 });
 

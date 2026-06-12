@@ -1,30 +1,40 @@
 <%- include('partials/header') %>
 <main>
-    <h1><%= title %></h1>
+    <% if (user && user.role_name === 'admin') { %>
 
-    <form action="/edit-organization/<%= organizationDetails.organization_id %>" method="POST">
-        <div class="form-group">
-            <label for="name">Organization Name:</label>
-            <input type="text" id="name" name="name" value="<%= organizationDetails.name %>" required >
+        <h1><%= title %></h1>
+
+        <form action="/edit-organization/<%= organizationDetails.organization_id %>" method="POST">
+            <div class="form-group">
+                <label for="name">Organization Name:</label>
+                <input type="text" id="name" name="name" value="<%= organizationDetails.name %>" required >
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="5" required><%= organizationDetails.description %></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="contactEmail">Contact Email</label>
+                <input type="email" id="contactEmail" name="contact_email" value="<%= organizationDetails.contact_email %>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="logo_filename">Logo Filename:</label>
+                <input type="text" id="logo_filename" name="logoFilename" value="<%= organizationDetails.logo_filename %>">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update Organization</button>
+        </form>
+
+    <% } else { %>
+        <div class="unauthorized-box" style="text-align: center; padding: 40px 20px;">
+            <h2>Access Denied</h2>
+            <p style="color: #6c757d;">You do not have the necessary administrative privileges to edit partner organizations.</p>
+            <a href="/" class="btn btn-primary" style="text-decoration: none;">Return Home</a>
         </div>
-
-        <div class="form-group">
-            <label for="description">Description</label>
-            <textarea id="description" name="description" rows="5" required><%= organizationDetails.description %></textarea>
-        </div>
-
-        <div class="form-group">
-            <label for="contactEmail">Contact Email</label>
-            <input type="email" id="contactEmail" name="contact_email" value="<%= organizationDetails.contact_email %>" required>
-        </div>
-
-        <div class="form-group">
-            <label for="logo_filename">Logo Filename:</label>
-            <input type="text" id="logo_filename" name="logoFilename" value="<%= organizationDetails.logo_filename %>">
-        </div>
-
-        <button type="submit">Update Organization</button>
-    </form>
+    <% } %>
 
 </main>
 

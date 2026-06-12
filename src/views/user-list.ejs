@@ -1,0 +1,33 @@
+<%- include('partials/header') %>
+
+<main class="users-container">
+    <h1>Registered Users Directory</h1>
+    <p>As an authorized administrator, you have access to core platform registries and user account listings.</p>
+
+
+    <% if (locals.users && users.length > 0) { %>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% users.forEach(function(account) { %>
+                    <tr>
+                        <td><%= account.name %></td>
+                        <td><%= accoount.email %></td>
+                        <td><%= account.role_name %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>    
+    <% } else { %> 
+        <p class="alert alert-info">No registered users found in the directory database record matrix.</p> 
+    <% } %>
+
+</main>
+
+<%- include('partials/footer') %>

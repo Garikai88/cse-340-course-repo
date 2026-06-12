@@ -32,53 +32,95 @@ import {
 } from './controllers/categories.js';
 import { testErrorPage } from './controllers/errors.js';
 
+// Imported user controllers
+import {
+    showUserRegistrationForm,
+    processUserRegistrationForm,
+    showLoginForm,
+    processLoginForm,
+    requireLogin,
+    showDashboard,
+    requireRole,
+    showUsersManagementPage
+} from './controllers/users.js';
+
 const router = express.Router();
 
 // --- Static and Core Views ---
 router.get('/', showHomePage);
 
-// --- Partner Organization Routes ---
+// --- User Registration & Authentication Routes ---
+router.get('/register', showUserRegistrationForm);
+router.post('/register', processUserRegistrationForm);
+router.get('/login', showLoginForm);
+router.post('/login', processLoginForm);
+
+// NEW User Management Directory Route
+// This will link our route to the showUsersManagemntPage controller and secures it
+router.get('/users', requireLogin, requireRole('admin'), showUsersManagementPage);
+
+// The request travels left-to-right: it must pass requireLogin first
+router.get('/dashboard', requireLogin, showDashboard);
+
+// --- Partner Organization Routes (STEP 8 PROTECTED) ---
 router.get('/organizations', showOrganizationsPage);
 router.get('/organization/:id', showOrganizationDetailsPage);
-router.get('/new-organization', showNewOrganizationForm);
-router.get('/edit-organization/:id', showEditOrganizationForm);
 
-// Organization POST processing handlers
-router.post('/new-organization', organizationValidation, processNewOrganizationForm);
-router.post('/edit-organization/:id', organizationValidation, processEditOrganizationForm);
+// New Organizations
+router.get('/new-organization', requireLogin, requireRole('admin'), showNewOrganizationForm);
+router.post('/new-organization', requireLogin, requireRole('admin'), organizationValidation, processNewOrganizationForm);
+
+// Edit Organizations (FIXED TYPO HERE)
+router.get('/edit-organization/:id', requireLogin, requireRole('admin'), showEditOrganizationForm);
+router.post('/edit-organization/:id', requireLogin, requireRole('admin'), organizationValidation, processEditOrganizationForm);
 
 
-// --- Service Project Routes ---
+// --- Service Project Routes (STEP 8 PROTECTED) ---
 router.get('/projects', showProjectsPage);
-
-// ALIGNED: Plural pathing matches your controller redirects and cancel actions
 router.get('/projects/:id', showProjectDetailsPage); 
-router.get('/new-project', showNewProjectForm);
 
-// FIXED FOR STEP 7: Routes use /edit-project/:id to match task specifications exactly
-router.get('/edit-project/:id', showEditProjectForm);
+// New Projects
+router.get('/new-project', requireLogin, requireRole('admin'), showNewProjectForm);
+router.post('/new-project', requireLogin, requireRole('admin'), projectValidation, processNewForm);
 
-// Project POST processing handlers (With projectValidation injected!)
-router.post('/new-project', projectValidation, processNewForm);
+// Edit Projects
+router.get('/edit-project/:id', requireLogin, requireRole('admin'), showEditProjectForm);
+router.post('/edit-project/:id', requireLogin, requireRole('admin'), projectValidation, processEditProjectForm);
 
-// FIXED FOR STEP 7: Form processing route updated to match specification exactly
-router.post('/edit-project/:id', projectValidation, processEditProjectForm);
 
-// --- Service Categories & Assignment Routes ---
+// --- Service Categories & Assignment Routes (STEP 8 PROTECTED) ---
 router.get('/categories', showCategoriesPage);
-router.get('/category/:id', showCategoryDetailsPage);
+router.get('/categories/:id', showCategoryDetailsPage);
 
-// ASSIGNMENT REQUIREMENT: Created Category endpoints
-router.get('/new-category', showNewCategoryForm);
-router.post('/new-category', categoryValidation, processNewCategoryForm);
+// New Categories
+router.get('/new-category', requireLogin, requireRole('admin'), showNewCategoryForm);
+router.post('/new-category', requireLogin, requireRole('admin'), categoryValidation, processNewCategoryForm);
 
-// Category Endpoints
-router.get('/edit-category/:id', showEditCategoryForm);
-router.post('/edit-category/:id', categoryValidation, processEditCategoryForm);
+// Edit Categories
+router.get('/edit-category/:id', requireLogin, requireRole('admin'), showEditCategoryForm);
+router.post('/edit-category/:id', requireLogin, requireRole('admin'), categoryValidation, processEditCategoryForm);
 
-// FIXED FOR STEP 3: Category assignment sync paths
-router.get('/project/:projectId/assign-categories', showAssignCategoriesForm); 
-router.post('/project/:projectId/assign-categories', processAssignCategoriesForm); 
+// Category Assignment
+router.get('/project/:projectId/assign-categories', requireLogin, requireRole('admin'), showAssignCategoriesForm); 
+router.post('/project/:projectId/assign-categories', requireLogin, requireRole('admin'), processAssignCategoriesForm);
+
+// The log out route
+router.get('/logout', (req, res) => {
+    // Destroy the express-session instance entirely from memory store
+    req.session.destroy((err) => {
+        if (err) {
+            console.error("Error clearing session during logout process:", err);
+            return res.redirect('/dashboard');
+        }
+
+        // We then clear out the client-side authentication cookie cache token
+        res.clearCookie('connect.sid'); 
+
+        // We then redirect back to the public homepage context as an anonymous guest
+        res.redirect('/');
+    });
+});
+
 
 // --- Error Handling Routes ---
 router.get('/test-error', testErrorPage);

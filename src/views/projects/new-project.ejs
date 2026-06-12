@@ -1,5 +1,8 @@
 <%- include('../partials/header') %>
-    <main class="form-container">
+
+<main class="form-container">
+    <% if (user && user.role_name === 'admin') { %>
+
         <h1>Add New Service Project</h1>
 
         <% if (messages && messages.error) { %>
@@ -52,5 +55,14 @@
 
         </form>
 
-    </main>
+    <% } else { %>
+        <div class="unauthorized-box" style="text-align: center; padding: 40px 20px;">
+            <h2>Access Denied</h2>
+            <p style="color: #6c757d;">You do not have the necessary administrative privileges to create a new service project.</p>
+            <a href="/" class="btn btn-primary" style="text-decoration: none;">Return Home</a>
+        </div>
+    <% } %>
+
+</main>
+
 <%- include('../partials/footer') %>
