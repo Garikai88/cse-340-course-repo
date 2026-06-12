@@ -38,15 +38,19 @@ app.use(express.json());
  * 2. SESSION CONFIGISTRATION (Must be before flash!)
  * ==========================================
  */
+// NEW: Tell Express to trust Render's secure proxy headers
+app.set('trust proxy', 1);
+
 const SESSION_SECRET = process.env.SESSION_SECRET || 'fallback_secret_for_local_dev';
 app.use(session({ 
     secret: SESSION_SECRET,
     resave: false,                
     saveUninitialized: false,     
     cookie: {
-        secure: false,              //This is crucial for HTTP localhost development environments
-        SameSite: 'lax',           // This forces modern browsers to store session IDs during redirects
-        maxAge: 1000 * 60 * 60    // Keeps the user session active for an hour
+        // UPDATED: True in production (Render HTTPS), false in development (Localhost HTTP)
+        secure: NODE_ENV === 'production', 
+        sameSite: 'lax',           // Fixed casing typo from 'SameSite' to 'sameSite'
+        maxAge: 1000 * 60 * 60     // Keeps the user session active for an hour
     }
 }));
 
