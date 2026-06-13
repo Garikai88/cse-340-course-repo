@@ -1,5 +1,5 @@
 import db from './db.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 /**
  * Existing Registration Function from Step 2
@@ -57,27 +57,51 @@ const findUserByEmail = async (email) => {
 
 // We then use bcrypt to compare the plain text input password with the stored hash
 const verifyPassword = async (password, passwordHash) => {
-    return bcrypt.compare(password, passwordHash);
+    return await bcrypt.compare(password, passwordHash);
 };
 
-// Orchestrate the authentication check
+
 const authenticateUser = async (email, password) => {
-    // We then look up the user by email
+    console.log("=== AUTHENTICATION TRACE START ===");
+    console.log("Target Email Input:", email);
+
+    // 1. Look up user by email
     const user = await findUserByEmail(email);
+    
     if (!user) {
-        return null; // This is when Email doesn't exist
+        console.log("❌ TRACE RESULT: findUserByEmail returned NULL. No matching email found.");
+        console.log("=== AUTHENTICATION TRACE END ===");
+        return null; 
     }
 
-    // We then verify if the input password matches the stored database hash
+    console.log("✔ User Found in DB:", user.email);
+    console.log("Retrieved Hash from DB:", user.password_hash);
+    console.log("Plain Text Password Input:", password);
+
+    // 2. Verify password match
     const isPasswordCorrect = await verifyPassword(password, user.password_hash);
+    console.log("Bcrypt Comparison Result:", isPasswordCorrect);
+
     if (!isPasswordCorrect) {
-        return null; // This is for password mismatch
+        console.log("❌ TRACE RESULT: verifyPassword returned FALSE. Password hash mismatch.");
+        console.log("=== AUTHENTICATION TRACE END ===");
+        return null; 
     }
 
-    // For security practice: Remove the password hash before passing the user object
-    delete user.password_hash;
+    console.log("✔ TRACE RESULT: Password matches successfully!");
+    
+    // 3. Create clean object transfer structure
+    const authenticatedUser = {
+        user_id: user.user_id,
+        name: user.name,
+        email: user.email,
+        role_name: user.role_name
+    };
 
-    return user;
+    console.log("Returning Final User Profile to Controller:", authenticatedUser);
+    console.log("=== AUTHENTICATION TRACE END ===");
+    
+    return authenticatedUser;
 };
 
 /** 
